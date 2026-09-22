@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Lin Packaging",
+    "slug": "erp-scanner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/images/lin-logo.png",
+    "backgroundColor": "#12245c",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.linpackaging.erpscanner",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Aplikasi ini memerlukan akses kamera untuk memindai barcode material."
+      }
+    },
+    "android": {
+      "permissions": ["android.permission.CAMERA"],
+      "package": "com.linpackaging.erpscanner",
+      "softwareKeyboardLayoutMode": "resize",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/lin-logo.png",
+        "backgroundColor": "#12245c"
+      }
+    },
+    "platforms": ["ios", "android"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Aplikasi ini memerlukan akses kamera untuk memindai barcode material."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "scheme": "erp-scanner"
+  }
+}
