@@ -17,6 +17,8 @@ const ROLE_LABEL: Record<string, string> = {
   QC: "Quality Control",
   PURCHASING: "Purchasing",
   PRODUCTION_PLANNER: "Production Planner",
+  GENERAL_MANAGER: "General Manager",
+  DESIGN: "Design",
 };
 
 function MenuRow({

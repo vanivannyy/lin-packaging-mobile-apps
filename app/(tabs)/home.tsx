@@ -30,6 +30,8 @@ const ROLE_LABEL: Record<string, string> = {
   QC: "Quality Control",
   PURCHASING: "Purchasing",
   PRODUCTION_PLANNER: "Production Planner",
+  GENERAL_MANAGER: "General Manager",
+  DESIGN: "Design",
 };
 
 const ALERT_ICON: Record<string, { icon: keyof typeof Ionicons.glyphMap; color: string; bg: string }> = {

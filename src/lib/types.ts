@@ -1,12 +1,14 @@
 export type UserRole =
   | "OWNER"
+  | "GENERAL_MANAGER"
   | "SALES_MANAGER"
   | "SALES"
   | "FINANCE"
   | "WAREHOUSE"
   | "QC"
   | "PURCHASING"
-  | "PRODUCTION_PLANNER";
+  | "PRODUCTION_PLANNER"
+  | "DESIGN";
 
 export type AuthUser = {
   id: string;
