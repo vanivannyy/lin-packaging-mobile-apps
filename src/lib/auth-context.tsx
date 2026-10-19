@@ -29,6 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setToken(storedToken);
           setUser(storedUser);
         }
+      } catch {
+        await clearSession().catch(() => undefined);
       } finally {
         setIsLoading(false);
       }

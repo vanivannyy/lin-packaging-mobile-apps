@@ -12,7 +12,8 @@ import {
   AppStateStatus,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/lib/theme";
@@ -37,6 +38,7 @@ export function BarcodeScannerView({
   onSubmit: (code: string) => Promise<void>;
 }) {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const [permission, requestPermission] = useCameraPermissions();
   const [processing, setProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -46,26 +48,33 @@ export function BarcodeScannerView({
   const cooldownRef = useRef(false);
   const appStateRef = useRef(AppState.currentState);
 
-  // Fix bug: kamera jadi layar hitam kalau app dibiarkan di background
-  // (buka app lain) cukup lama lalu dibuka lagi. Ini terjadi karena OS
-  // (terutama Android) bisa me-release native camera session, tapi
-  // CameraView tetap ter-mount sehingga preview tidak otomatis restart.
-  // Solusinya: saat app kembali ke "active" setelah sempat
-  // background/inactive, ganti `key` CameraView agar remount total dan
-  // sesi kamera native diinisialisasi ulang dari awal.
+  const restartCamera = useCallback(() => {
+    setCameraKey((prev) => prev + 1);
+    lastScannedRef.current = null;
+    cooldownRef.current = false;
+    setErrorMsg(null);
+  }, []);
+
+  // Remount kamera setiap layar scan dapat fokus lagi (ganti tab, kembali
+  // dari detail material, dll.). Tanpa ini sesi native sering mati tapi
+  // preview tetap hitam.
+  useFocusEffect(
+    useCallback(() => {
+      restartCamera();
+    }, [restartCamera]),
+  );
+
+  // Sama saat app kembali dari background lama (Android sering release sesi).
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState: AppStateStatus) => {
-      if (appStateRef.current.match(/inactive|background/) && nextState === "active") {
-        setCameraKey((prev) => prev + 1);
-        lastScannedRef.current = null;
-        cooldownRef.current = false;
-        setErrorMsg(null);
+      if (appStateRef.current.match(/inactive|background/) && nextState === "active" && isFocused) {
+        restartCamera();
       }
       appStateRef.current = nextState;
     });
 
     return () => subscription.remove();
-  }, []);
+  }, [isFocused, restartCamera]);
 
   const submit = useCallback(
     async (code: string) => {
@@ -128,14 +137,18 @@ export function BarcodeScannerView({
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      <CameraView
-        key={cameraKey}
-        style={StyleSheet.absoluteFillObject}
-        facing="back"
-        barcodeScannerSettings={{ barcodeTypes: ["code128"] }}
-        onBarcodeScanned={processing ? undefined : handleBarcodeScanned}
-        onMountError={(e) => setErrorMsg(e.message || "Kamera gagal dimulai, coba lagi")}
-      />
+      {isFocused ? (
+        <CameraView
+          key={cameraKey}
+          style={StyleSheet.absoluteFillObject}
+          facing="back"
+          autofocus="on"
+          active
+          barcodeScannerSettings={{ barcodeTypes: ["code128"] }}
+          onBarcodeScanned={processing ? undefined : handleBarcodeScanned}
+          onMountError={(e) => setErrorMsg(e.message || "Kamera gagal dimulai, coba lagi")}
+        />
+      ) : null}
 
       <KeyboardAvoidingView
         style={styles.overlay}

@@ -1,15 +1,25 @@
 import { useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { Platform, View, ActivityIndicator, StyleSheet } from "react-native";
+import { initialWindowMetrics } from "react-native-safe-area-context";
 import { useAuth } from "@/lib/auth-context";
 import { useNotifications } from "@/lib/notifications-context";
 import { hasModule } from "@/lib/types";
 import { COLORS } from "@/lib/theme";
 
+function readBottomInset(): number {
+  const measured = initialWindowMetrics?.insets.bottom;
+  if (typeof measured === "number" && Number.isFinite(measured) && measured >= 0) return measured;
+  return Platform.OS === "android" ? 48 : 0;
+}
+
 export default function TabsLayout() {
   const { user, isLoading } = useAuth();
   const { unreadCount, refresh } = useNotifications();
+  // Edge-to-edge Android draws the 3-button nav over a fixed-height bar.
+  // Read the inset from window metrics so a missing React context cannot crash startup.
+  const tabBarBottomInset = Math.max(readBottomInset(), Platform.OS === "android" ? 16 : 0);
 
   useEffect(() => {
     if (user) refresh();
@@ -35,7 +45,13 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textMuted,
-        tabBarStyle: { height: 62, paddingBottom: 8, paddingTop: 6, borderTopColor: COLORS.border },
+        tabBarStyle: {
+          height: 56 + tabBarBottomInset,
+          paddingBottom: tabBarBottomInset,
+          paddingTop: 6,
+          borderTopColor: COLORS.border,
+          backgroundColor: COLORS.card,
+        },
         tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
       }}
     >

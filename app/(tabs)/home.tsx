@@ -287,7 +287,7 @@ export default function HomeScreen() {
 
         <Text style={styles.sectionTitle}>Perlu Perhatian</Text>
         <View style={styles.alertCard}>
-          {summary && summary.alerts.length > 0 ? (
+          {summary && (summary.alerts?.length ?? 0) > 0 ? (
             summary.alerts.map((alert, idx) => {
               const meta = ALERT_ICON[alert.type] ?? ALERT_ICON.DELAY;
               return (
@@ -307,7 +307,7 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <View style={{ height: 24 }} />
+        <View style={{ height: 32 }} />
       </ScrollView>
     </View>
   );

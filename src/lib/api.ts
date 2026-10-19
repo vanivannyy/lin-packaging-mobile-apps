@@ -1,6 +1,6 @@
 import { getToken } from "@/lib/storage";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://lin-packaging-service.vercel.app";
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "https://erp.linpackjkt.com";
 
 type FetchOptions = Omit<RequestInit, "headers"> & {
   headers?: Record<string, string>;
