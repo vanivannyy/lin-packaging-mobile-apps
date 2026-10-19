@@ -32,7 +32,6 @@ Edit `.env` sesuai environment:
 | Emulator Android | `http://10.0.2.2:3000` |
 | Simulator iOS | `http://localhost:3000` |
 | HP fisik (WiFi) | `http://<IP-LAN-server>:3000` |
-| Expo Go via tunnel | `http://localhost:3000` (gunakan flag `--tunnel`) |
 
 Untuk mengetahui IP LAN server (macOS):
 
@@ -45,9 +44,6 @@ ipconfig getifaddr en0
 ```bash
 # Mode development (QR code untuk Expo Go)
 npx expo start
-
-# HP fisik tanpa satu jaringan (pakai Expo tunnel - perlu akun Expo)
-npx expo start --tunnel
 
 # Khusus Android
 npx expo start --android
@@ -105,7 +101,7 @@ eas build --platform android   # APK/AAB
 eas build --platform ios       # IPA (perlu Apple Developer Account)
 ```
 
-Pastikan `EXPO_PUBLIC_API_URL` sudah diset ke URL backend production sebelum build.
+Production memakai `EXPO_PUBLIC_API_URL=https://erp.linpackjkt.com` (sudah di-set di `.env.example` dan script `build:apk`). URL ini ikut ter-bake saat APK di-compile.
 
 ## Catatan Keamanan
 
